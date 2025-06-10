@@ -8,8 +8,6 @@ import pandas as pd
 import os
 from tqdm import tqdm
 
-# ================== 資料集 ==================
-
 class FERPlusDataset(Dataset):
     def __init__(self, csv_file, img_dir, transform=None):
         self.data = pd.read_csv(csv_file, header=None)
@@ -33,13 +31,11 @@ class FERPlusDataset(Dataset):
 
 
 if __name__ == "__main__":
-    # 設定裝置
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     if device.type == "cuda":
         print(f"GPU Name: {torch.cuda.get_device_name(0)}")
-
-    # 前處理
+        
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
@@ -47,7 +43,6 @@ if __name__ == "__main__":
                              std=[0.229, 0.224, 0.225])
     ])
 
-    # 資料載入
     dataset = FERPlusDataset("label.csv", "FER2013Train", transform)
     dataloader = DataLoader(
         dataset,
@@ -57,17 +52,14 @@ if __name__ == "__main__":
         pin_memory=True
     )
 
-    # 載入 MobileNetV2
     weights = MobileNet_V2_Weights.DEFAULT
     model = mobilenet_v2(weights=weights)
     model.classifier[1] = nn.Linear(model.last_channel, 8)  # FER+ 8 類
     model = model.to(device)
 
-    # 訓練設定
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
-    # 訓練迴圈
     for epoch in range(5):
         model.train()
         running_loss = 0.0
