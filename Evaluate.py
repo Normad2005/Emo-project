@@ -9,7 +9,6 @@ import os
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
-# Dataset 類別（跟 train 一樣）
 class FERPlusDataset(Dataset):
     def __init__(self, csv_file, img_dir, transform=None):
         self.data = pd.read_csv(csv_file, header=None)
@@ -29,7 +28,6 @@ class FERPlusDataset(Dataset):
             image = self.transform(image)
         return image, label
 
-# 評估函數
 def evaluate(model, dataloader, device):
     model.eval()
     total = 0
@@ -59,7 +57,6 @@ def evaluate(model, dataloader, device):
     print(f"Validation Accuracy: {acc:.2f}%  |  Avg Loss: {avg_loss:.4f}")
     return y_true, y_pred
 
-# 主程式
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
@@ -75,7 +72,7 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=2, pin_memory=True)
 
     weights = MobileNet_V2_Weights.DEFAULT
-    model = mobilenet_v2(weights=None)  # 不載入預訓練權重
+    model = mobilenet_v2(weights=None)
     model.classifier[1] = nn.Linear(model.last_channel, 8)
     model.load_state_dict(torch.load("mobilenetv2_ferplus.pth", map_location=device))
     model = model.to(device)
