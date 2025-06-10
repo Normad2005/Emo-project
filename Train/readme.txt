@@ -1,1 +1,1 @@
-# [Train](https://lms2020.nchu.edu.tw/)
+[Train](https://lms2020.nchu.edu.tw/)
